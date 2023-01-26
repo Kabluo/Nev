@@ -1,5 +1,5 @@
 //TODO<br>
--add other asset files (Animations, Audio, Fonts, Materials, Prefabs, Scenes, Sprites, TMPro and Tiles) to branch
+-add other asset files (Animations, Audio, Fonts, Materials, Prefabs, Scenes, Sprites, TMPro and Tiles) to branch<br>
 -overall refactoring of all scripts for improved readability, currently the scripts don't follow any specific rules (high priority)<br>
 *implement the "this." notation to scripts that don't contain it<br>
 *remove obselete code and leftover comments<br>
