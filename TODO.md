@@ -16,3 +16,4 @@
 -create animations for additional stances and souls<br>
 -fine-tune platformer mechanics<br>
 -complete stage "facility 8"<br>
+-overhaul UI elements<br>
