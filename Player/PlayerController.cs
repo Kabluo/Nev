@@ -46,13 +46,13 @@ public class PlayerController : MonoBehaviour, IDataPersistance
     [SerializeField] float iFrameAfterStagger = .5f;
     [SerializeField] float iFrameAfterKnockback = 1f;
     private float isDamagedCounter = 0f;
-    //public bool endEnemyStandby = false;
 
     [Header("Ground Check")]
     [SerializeField] Transform groundPoint;
     [SerializeField] LayerMask whatIsGround;
     public Vector2 lastOnGround;
     public bool isOnGround;
+    [SerializeField] List<Vector2> playerAfterAnimOffset = new List<Vector2>();
     
     [Header("Movement")]
     public float moveSpeed;
@@ -372,7 +372,7 @@ public class PlayerController : MonoBehaviour, IDataPersistance
     {
         if(isDamaged && !isBroken) { return; }
 
-        if(myAnimator.GetBool("isBroken") && !isGrab)
+        if(isBroken && !isGrab) //used to be myAnimator.GetBool("isBroken");, left comment as a backup
         {
             ExecutePlayer(incomingAttackId, attackOrigin);
             return;
@@ -536,5 +536,14 @@ public class PlayerController : MonoBehaviour, IDataPersistance
     public void PlaySoundInAnimation(int effectIndex)
     {
         AudioManager.instance.PlaySFXPitchRandomized(effectIndex);
+    }
+
+    public void PlacePlayerAfterAnim(int index)
+    {
+        Vector2 newPos = new Vector2(gameObject.transform.position.x + (gameObject.transform.localScale.x * playerAfterAnimOffset[index].x), gameObject.transform.position.y + playerAfterAnimOffset[index].y);
+        if(!Physics2D.OverlapCircle(newPos, .5f, whatIsGround))
+        {
+            gameObject.transform.position = newPos;
+        }
     }
 }

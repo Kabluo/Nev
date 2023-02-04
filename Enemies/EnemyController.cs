@@ -32,7 +32,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] float distanceToPlayerWhenEngaged = 0.5f; //at what distance should the character stop approaching player
 
     [Header("Standby Management")]
-    [SerializeField] List<string> playerAnimNames = new List<string>(); //end standby when player reaches said animation stage
+    //[SerializeField] List<string> playerAnimNames = new List<string>(); //end standby when player reaches said animation stage
     private Vector3 standbyEnterLocation;
     public bool onStandby;
 
@@ -54,14 +54,17 @@ public class EnemyController : MonoBehaviour
         animator.SetBool("isOnGround", isOnGround);
         animator.SetFloat("speed", Mathf.Abs(rigidBody.velocity.x));
 
-        if(onStandby) //standby ending is moved to behaviour scripts
+        if(onStandby) //standby ending is handled through behaviour scripts due to possible different behaviours
+        {
             rigidBody.velocity = new Vector2(0f, 0f);
+            return;
+        }
         
         if(animator.GetCurrentAnimatorStateInfo(0).IsTag("PreventsAction") && healthController.knockback != 0)
-        rigidBody.velocity = new Vector2(healthController.knockback, rigidBody.velocity.y);
+            rigidBody.velocity = new Vector2(healthController.knockback, rigidBody.velocity.y);
         
         else if(animator.GetCurrentAnimatorStateInfo(0).IsTag("PreventsAction"))
-        rigidBody.velocity = new Vector2(-transform.localScale.x * animator.GetFloat("attackKickX"), rigidBody.velocity.y + animator.GetFloat("attackKickY"));
+            rigidBody.velocity = new Vector2(-transform.localScale.x * animator.GetFloat("attackKickX"), rigidBody.velocity.y + animator.GetFloat("attackKickY"));
 
         if(!PlayerController.instance.isAlive) //if player is dead, stop attacking and patrol, maybe just get player gameobject at this point
         {
@@ -73,15 +76,15 @@ public class EnemyController : MonoBehaviour
         }
 
         if(!isChasing)
-        Patrol();
+            Patrol();
 
         else
-        Engaged();
+            Engaged();
     }
 
     void FixedUpdate()
     {
-        Debug.Log(isChasing);
+        //Debug.Log(isChasing);
         if(Time.timeScale == 0 || healthController.isBroken) { return; }
         //Debug.DrawLine(transform.position, new Vector3(transform.position.x + (attackRange*-transform.localScale.x), transform.position.y), Color.cyan);
 
@@ -90,7 +93,7 @@ public class EnemyController : MonoBehaviour
         CheckRange();
         
         if(Physics2D.OverlapCircle(wallCheckPoint.position, .25f, whatIsGround))
-        Jump();
+            Jump();
 
         if(isChasing) { return; }
 
@@ -111,23 +114,15 @@ public class EnemyController : MonoBehaviour
     void Jump()
     {
         if(!animator.GetCurrentAnimatorStateInfo(0).IsTag("PreventsAction") && isOnGround)
-        rigidBody.velocity = new Vector2(rigidBody.velocity.x, jumpForce);
+            rigidBody.velocity = new Vector2(rigidBody.velocity.x, jumpForce);
     }
 
     void CheckRange()
     {
         //Debug.DrawLine(transform.position, new Vector3(transform.position.x - (attackRange*transform.localScale.x), transform.position.y));
-        if(Vector3.Distance(PlayerController.instance.transform.position, transform.position) <= attackRange * Mathf.Sign(playerLocation.x - transform.position.x) * -transform.localScale.x)
-        {
-            Debug.DrawLine(transform.position, PlayerController.instance.transform.position);
-            if(!Physics2D.Linecast(transform.position, PlayerController.instance.transform.position, whatIsGround))
-            {
-                inRange = true;
-            }
-
-            else
-                inRange = false;
-        }
+        if(Vector3.Distance(PlayerController.instance.transform.position, transform.position) <= attackRange * Mathf.Sign(playerLocation.x - transform.position.x) * -transform.localScale.x
+        && !Physics2D.Linecast(transform.position, PlayerController.instance.transform.position, whatIsGround))
+            inRange = true;
         
         else
             inRange = false;
@@ -207,8 +202,10 @@ public class EnemyController : MonoBehaviour
     {
         if(!onStandby)
         {
-            if(!Physics2D.OverlapCircle(new Vector3((PlayerController.instance.gameObject.transform.position.x + (PlayerController.instance.gameObject.transform.localScale.x * standbyOffset.x)), PlayerController.instance.gameObject.transform.position.y + standbyOffset.y, 0f), .2f, whatIsGround))
-                gameObject.transform.position = new Vector3((PlayerController.instance.gameObject.transform.position.x + (PlayerController.instance.gameObject.transform.localScale.x * standbyOffset.x)), PlayerController.instance.gameObject.transform.position.y + standbyOffset.y, 0f);
+            Vector2 newPos = new Vector2(PlayerController.instance.gameObject.transform.position.x + (PlayerController.instance.transform.localScale.x * standbyOffset.x),
+            PlayerController.instance.gameObject.transform.position.y + standbyOffset.y);
+            if(!Physics2D.OverlapCircle(newPos, .5f, whatIsGround))
+                gameObject.transform.position = newPos;
 
             onStandby = true;
             animator.SetBool("onStandby", true);

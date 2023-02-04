@@ -142,6 +142,10 @@ public class UIController : MonoBehaviour
         UpdateStanceHud();
         UpdateSoulHud();
         UpdateLightHud();
+        UpdateHealth(PlayerTracker.instance.health, PlayerTracker.instance.maxHealth);
+        UpdateStagger(PlayerTracker.instance.stagger, PlayerTracker.instance.maxStagger);
+        UpdateEnergy(PlayerTracker.instance.energy, PlayerTracker.instance.maxEnergy);
+        optionsScreen.GetComponent<OptionsMenu>().LoadPrefs(); //load options menu parameneters on start
     }
 
     /*
@@ -319,7 +323,6 @@ public class UIController : MonoBehaviour
         {
             pauseScreen.SetActive(false);
             optionsScreen.SetActive(true);
-            optionsScreen.GetComponent<OptionsMenu>().LoadPrefs();
             SetHighlightedOnNewMenu(optionsMenuBackButton);
         }
         else
