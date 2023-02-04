@@ -7,49 +7,34 @@ public class PlayerController : MonoBehaviour, IDataPersistance
 {
     private bool originalObject = false;
 
+    [Header("States")]
     public bool isAlive = true;
     public bool isInScene;
+    public bool isBroken = false;
+    public bool isInvincible = false;
+    public bool swappingStance = false;
+    public bool swappingSoul = false;
+
+    [Header("References")]
     public Rigidbody2D myRigidbody;
     public Animator myAnimator;
     [SerializeField] ParticleSystem bloodEffect;
     public ParticleSystem brokenEffect;
+
+    [Header("Attacking")]
     //public float storedInput;
     public bool isLightAttacking;
     public bool lightAttack1;
     public bool lightAttack2;
     public bool lightAttack3;
-    //public bool lightAttack4; unused right now, manipulated through the animator, done like this as it can't edit lists or arrays
-    //public bool lightAttack5;
-    //public bool lightAttack6;
-    //public bool lightAttack7;
-    //public bool lightAttack8;
-    //public bool lightAttack9;
-    //public bool lightAttack10;
     public bool isSoulAttacking;
     public bool soulAttack1;
     public bool soulAttack2;
     public bool soulAttack3;
-    public bool soulAttack4;
-    //public bool isSoulAttack5;
-    //public bool isSoulAttack6;
-    //public bool isSoulAttack7;
-    //public bool isSoulAttack8;
-    //public bool isSoulAttack9;
-    //public bool isSoulAttack10;
+    public bool fireProjectile;
+    public int healAmount;
 
-
-    [SerializeField] Transform groundPoint;
-    [SerializeField] LayerMask whatIsGround;
-    public Vector2 lastOnGround;
-    public bool isOnGround;
-    public bool swappingStance = false;
-    public bool swappingSoul = false;
-
-    public float moveSpeed;
-    [SerializeField] float sprintMod = 8f;
-    public float jumpForce;
-    public float baseMoveSpeed;
-
+    [Header("Taking Damage")]
     private float takenDamageAffinity = 0f;
     [SerializeField] float staggerRegenDelay = 2f;
     private float currentStaggerRegenDelay;
@@ -57,23 +42,29 @@ public class PlayerController : MonoBehaviour, IDataPersistance
     private float knockback = 0f;
     [SerializeField] float knockbackMod = 5f;
     public bool knockedBack;
-    public bool isBroken = false;
-    public bool isInvincible = false;
     public bool isDamaged = false;
     [SerializeField] float iFrameAfterStagger = .5f;
     [SerializeField] float iFrameAfterKnockback = 1f;
     private float isDamagedCounter = 0f;
-    [SerializeField] float dodgeTimerBase = 0.45f;
+    //public bool endEnemyStandby = false;
+
+    [Header("Ground Check")]
+    [SerializeField] Transform groundPoint;
+    [SerializeField] LayerMask whatIsGround;
+    public Vector2 lastOnGround;
+    public bool isOnGround;
+    
+    [Header("Movement")]
+    public float moveSpeed;
+    [SerializeField] float sprintMod = 8f;
+    public float jumpForce;
+    public float baseMoveSpeed;
+    [SerializeField] float dodgeTimerBase = 0.25f; //delay between shift presses for dodging
     private bool isDodging = false;
     private float dodgeTimer;
     private float dodgeTimeAtAnim;
     private float dodgeDirection = 1f; //-1 left, 1 right
     [SerializeField] float dodgeStoredInput = 0.45f;
-
-    public bool endEnemyStandby = false;
-
-    public bool fireProjectile;
-    public int healAmount;
 
     public static PlayerController instance;
 
@@ -92,12 +83,7 @@ public class PlayerController : MonoBehaviour, IDataPersistance
 
     void Start()
     {
-        UIController.instance.UpdateHealth(PlayerTracker.instance.health, PlayerTracker.instance.maxHealth);
-        UIController.instance.UpdateStagger(PlayerTracker.instance.stagger, PlayerTracker.instance.maxStagger);
-        UIController.instance.UpdateEnergy(PlayerTracker.instance.energy, PlayerTracker.instance.maxEnergy);
-
-        Instantiate(PlayerTracker.instance.stanceObjects[PlayerTracker.instance.activeStanceIndex], transform);
-        Instantiate(PlayerTracker.instance.soulObjects[PlayerTracker.instance.activeSoulIndex], transform); //created as a child of this object at transform location
+        StartCoroutine(InitAtStartup());
         baseMoveSpeed = moveSpeed;
     }
 
@@ -114,15 +100,12 @@ public class PlayerController : MonoBehaviour, IDataPersistance
 
         myAnimator.SetBool("isOnGround", isOnGround); //isOnGround is calculated in Jump() function
 
-        //removed isDamaged from ere
+        //removed isDamaged from here
         if((isInvincible || !isAlive || isInScene) && !isBroken) //not invincible while isBroken
         gameObject.layer = LayerMask.NameToLayer("PlayerInvincible");
 
         else
         gameObject.layer = LayerMask.NameToLayer("Player");
-
-        //myAnimator.SetInteger("lightAttackID", PlayerTracker.instance.equippedStances[PlayerTracker.instance.activeStanceIndex]); //maybe move to stanceswap later to stop
-        //myAnimator.SetInteger("soulAttackID", PlayerTracker.instance.equippedSouls[PlayerTracker.instance.activeSoulIndex]); //repeated calls
 
         if(!isAlive) //remake later, also figure out a way so that isBroken animator state only triggers after certain animations
         {
@@ -144,7 +127,6 @@ public class PlayerController : MonoBehaviour, IDataPersistance
             myRigidbody.velocity = new Vector2 (0f, myRigidbody.velocity.y);
         }
 
-        
         if(isDamaged)
         {
             isDamagedCounter -= Time.deltaTime;
@@ -158,7 +140,6 @@ public class PlayerController : MonoBehaviour, IDataPersistance
             }*/
         }
         
-
         if(Time.timeScale == 0f || isBroken) { return; }
         Run();
         Jump();
@@ -172,7 +153,7 @@ public class PlayerController : MonoBehaviour, IDataPersistance
     {
         if(isInvincible && myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Dodge")) //if dodging
         {
-            myRigidbody.velocity = new Vector2 (dodgeDirection * myAnimator.GetFloat("attackAdvance"), myRigidbody.velocity.y);
+            myRigidbody.velocity = new Vector2 (dodgeDirection * myAnimator.GetFloat("attackAdvanceX"), myRigidbody.velocity.y);
             FlipSides();   
         }
 
@@ -195,7 +176,7 @@ public class PlayerController : MonoBehaviour, IDataPersistance
         }
 
         else if(myAnimator.GetCurrentAnimatorStateInfo(0).IsTag("PreventMovement") && knockback == 0)
-            myRigidbody.velocity = new Vector2 (transform.localScale.x * myAnimator.GetFloat("attackAdvance"), myRigidbody.velocity.y);
+            myRigidbody.velocity = new Vector2 (transform.localScale.x * myAnimator.GetFloat("attackAdvanceX"), myRigidbody.velocity.y + myAnimator.GetFloat("attackAdvanceY"));
 
         else
         {
@@ -230,7 +211,7 @@ public class PlayerController : MonoBehaviour, IDataPersistance
 
     void Dodge() //update to use stored input later
     {
-        if(Input.GetButton("DodgeRun") && isOnGround)
+        if(Input.GetButton("DodgeRun") && isOnGround) //add isOnGround to prevent air momentum, slows down player when jumping that way, remove to add momentum back
         moveSpeed = baseMoveSpeed + sprintMod;
 
         else
@@ -256,7 +237,6 @@ public class PlayerController : MonoBehaviour, IDataPersistance
             
             isDodging = true;
             dodgeTimer = 0f;
-            //myAnimator.SetTrigger("hasDodged");
         }
 
         if(Time.time > dodgeTimeAtAnim + dodgeStoredInput)
@@ -388,31 +368,21 @@ public class PlayerController : MonoBehaviour, IDataPersistance
         myAnimator.SetInteger("soulAttackID", PlayerTracker.instance.equippedSouls[PlayerTracker.instance.activeSoulIndex]);
     }
 
-    public void DamagePlayer(int damage, int staggerDamage, int damageType, Transform attackOrigin, bool isGrab, int enemyId, int hitSoundIndex)
+    public void DamagePlayer(int damage, int staggerDamage, int damageType, Transform attackOrigin, bool isGrab, int incomingAttackId, int hitSoundIndex)
     {
-        if(isDamaged) { return; }
-        if(myAnimator.GetBool("isBroken") && !isGrab) { return; } //grabs go into executions automatically, bypassing isBroken
+        if(isDamaged && !isBroken) { return; }
 
-        //gameObject.layer = LayerMask.NameToLayer("PlayerInvincible");
-
-        /*
-        if(UIController.instance.travelScreen.activeSelf) //called before IconMenu as it reverts to it after closing
-        UIController.instance.TravelMenu();
-
-        if(UIController.instance.iconScreen.activeSelf) //close open menus
-        UIController.instance.IconMenu();
-
-        if(UIController.instance.dialogueScreen.activeSelf)
-        UIController.instance.DialogueMenu();
-        */ //player  becomes  invincible  due to  isInScene  anyways, but  still  this  can remain here as a failsafe
+        if(myAnimator.GetBool("isBroken") && !isGrab)
+        {
+            ExecutePlayer(incomingAttackId, attackOrigin);
+            return;
+        } //grabs go into executions automatically, bypassing isBroken
 
         if(isGrab)
         {
-            if(isBroken) //prevents animation errors if grabbed while already broken
-            isBroken = false;
+            transform.localScale = new Vector3(-1 * Mathf.Sign(transform.position.x - attackOrigin.position.x), 1f, 1f);
 
-            transform.localScale = new Vector3(-1 * Mathf.Sign(transform.position.x - attackOrigin.position.x), 1, 1);
-            myAnimator.SetInteger("grabberId", enemyId);
+            myAnimator.SetInteger("pairId", incomingAttackId);
             myAnimator.SetTrigger("hasBeenGrabbed");
         }
 
@@ -479,71 +449,29 @@ public class PlayerController : MonoBehaviour, IDataPersistance
         
         UIController.instance.UpdateHealth(PlayerTracker.instance.health, PlayerTracker.instance.maxHealth); //update UI
 
-        if(PlayerTracker.instance.health <= 0 && !isGrab)  //grabs have their own executions
+        if(PlayerTracker.instance.health <= 0)  //grabs have their own executions
         {
-            Instantiate(brokenEffect, transform.position, Quaternion.Euler(90, 0, 0));
-            isBroken = true;
-        }
-        
-        else if(PlayerTracker.instance.health <= 0) //if reduced <0 by grab
-        {
-            myAnimator.SetTrigger("hasBeenKilled");
-            isAlive = false;
-
-            RespawnController.instance.playerCorpseId = enemyId + 1; //corpse objects are structured as [...enemyExecution, enemyGrabkill,...], enemies with multiple grabs/executions can have multiple Ids, just pass in different Id values and adjust accordingly
+            if(!isGrab)
+            {
+                Instantiate(brokenEffect, transform.position, Quaternion.Euler(90, 0, 0));
+                isBroken = true;
+            }
+            
+            else
+                ExecutePlayer(incomingAttackId, attackOrigin);
         }
     }
 
-    /* integrated into DamagePlayer
-    public void GrabPlayer(int enemyId, int damage, int damageType, Transform attackOrigin)
-    {
-        transform.localScale = new Vector3(-1 * Mathf.Sign(transform.position.x - attackOrigin.position.x), 1, 1);
-        myAnimator.SetInteger("grabberId", enemyId);
-        myAnimator.SetTrigger("hasBeenGrabbed");
-
-        if(damageType == 0)  //needs refactoring, change affinities into an  array, lots of code rewrite, simple but busy work
-            takenDamageAffinity = PlayerTracker.instance.playerPhysicalAffinity;
-
-        else if(damageType == 1)
-            takenDamageAffinity = PlayerTracker.instance.playerFireAffinity;
-        
-        else if(damageType == 2)
-            takenDamageAffinity = PlayerTracker.instance.playerColdAffinity;
-
-        else if(damageType == 3)
-            takenDamageAffinity = PlayerTracker.instance.playerLightningAffinity;
-        
-        else if(damageType == 4)
-            takenDamageAffinity = PlayerTracker.instance.playerPoisonAffinity;
-
-        else if(damageType == 5)
-            takenDamageAffinity = PlayerTracker.instance.playerForceAffinity;
-
-        else
-            takenDamageAffinity = PlayerTracker.instance.playerPsychicAffinity;
-        
-        PlayerTracker.instance.health -= Mathf.RoundToInt(damage*takenDamageAffinity);
-
-        UIController.instance.UpdateHealth(PlayerTracker.instance.health, PlayerTracker.instance.maxHealth); //update UI
-
-        if(PlayerTracker.instance.health <= 0)
-        {
-            myAnimator.SetTrigger("hasBeenKilled");
-            isAlive = false;
-        }
-    }
-    */
-
-    public void ExecutePlayer(int enemyId, Transform attackOrigin)
+    void ExecutePlayer(int executionId, Transform attackOrigin)
     {
         isBroken = false; //end broken state
         isAlive = false;
-        myAnimator.SetBool("isBroken", isBroken);
         transform.localScale = new Vector3(-1 * Mathf.Sign(transform.position.x - attackOrigin.position.x), 1, 1);
-        myAnimator.SetInteger("grabberId", enemyId); //maybe change to executionId later
-        myAnimator.SetTrigger("hasBeenExecuted");
+        myAnimator.SetBool("isBroken", isBroken);
+        myAnimator.SetInteger("pairId", executionId);
+        myAnimator.SetTrigger("hasBeenKilled");
 
-        RespawnController.instance.playerCorpseId = enemyId;
+        RespawnController.instance.playerCorpseId = executionId;
     }
 
     private void BleedPlayer(Quaternion angle)
@@ -595,6 +523,14 @@ public class PlayerController : MonoBehaviour, IDataPersistance
 
         data.playerPosition = this.lastOnGround;
         data.levelName = SceneManager.GetActiveScene().name;
+    }
+
+    IEnumerator InitAtStartup()
+    {
+        yield return new WaitForEndOfFrame();
+
+        Instantiate(PlayerTracker.instance.stanceObjects[PlayerTracker.instance.activeStanceIndex], transform);
+        Instantiate(PlayerTracker.instance.soulObjects[PlayerTracker.instance.activeSoulIndex], transform); //created as a child of this object at transform location
     }
 
     public void PlaySoundInAnimation(int effectIndex)

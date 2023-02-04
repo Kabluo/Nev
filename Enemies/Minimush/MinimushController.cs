@@ -98,10 +98,10 @@ public class MinimushController : MonoBehaviour
         animator.SetBool("onStandby", onStandby);
         gameObject.layer = LayerMask.NameToLayer("EnemyInvincible"); //make invincible
 
-        if(!Physics2D.OverlapCircle(new Vector3((PlayerController.instance.gameObject.transform.position.x + (PlayerController.instance.gameObject.transform.localScale.x + 0.86f)), PlayerController.instance.gameObject.transform.position.y, 0f), .2f, whatIsGround)) //creates a circle around point with a size of .2, if it overlaps the layermask set true
+        if(!Physics2D.OverlapCircle(new Vector3((PlayerController.instance.gameObject.transform.position.x + (PlayerController.instance.gameObject.transform.localScale.x * 0.86f)), PlayerController.instance.gameObject.transform.position.y, 0f), .2f, whatIsGround)) //creates a circle around point with a size of .2, if it overlaps the layermask set true
             gameObject.transform.position = new Vector3((PlayerController.instance.gameObject.transform.position.x + (PlayerController.instance.gameObject.transform.localScale.x*0.86f)), PlayerController.instance.gameObject.transform.position.y, 0f);
 
-        if(PlayerController.instance.gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle") && animator.GetCurrentAnimatorStateInfo(0).IsName("Standby")) //end standby upon returning to idle, second  line is failsafe
+        if(PlayerController.instance.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Idle") && animator.GetCurrentAnimatorStateInfo(0).IsName("Standby")) //end standby upon returning to idle, second  line is failsafe
         {
             onStandby = false;
             animator.SetBool("onStandby", onStandby);

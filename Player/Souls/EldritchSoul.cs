@@ -59,14 +59,12 @@ public class EldritchSoul : MonoBehaviour
 
     void SoulAttack()
     {
-        if(PlayerTracker.instance.energy < attackEnergyCost) { return; }
-
-        if(Input.GetButtonDown("soulAttack") && PlayerController.instance.isOnGround && !PlayerController.instance.isLightAttacking)
+        if(Input.GetButtonDown("soulAttack") && PlayerController.instance.isOnGround && !PlayerController.instance.isLightAttacking && PlayerTracker.instance.energy > attackEnergyCost)
         {
             timeAtAnim = Time.time;
             PlayerController.instance.isSoulAttacking = true;
         }
-        
+
         if(Time.time > timeAtAnim + storedInput)
         {
             PlayerController.instance.isSoulAttacking = false;

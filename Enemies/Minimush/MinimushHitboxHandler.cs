@@ -62,11 +62,9 @@ public class MinimushHitboxHandler : MonoBehaviour
         {
             if(other.GetComponent<PlayerController>().isBroken)
             {
-                other.GetComponent<PlayerController>().ExecutePlayer(0, transform);
                 controller.onStandby = true;
             }
 
-            else
             other.GetComponent<PlayerController>().DamagePlayer(15, 25, 0, transform, false, 0, 7); //stagger damage is static
         }
 
@@ -74,11 +72,9 @@ public class MinimushHitboxHandler : MonoBehaviour
         {
             if(other.GetComponent<PlayerController>().isBroken)
             {
-                other.GetComponent<PlayerController>().ExecutePlayer(0, transform);
                 controller.onStandby = true;
             }
 
-            else
             other.GetComponent<PlayerController>().DamagePlayer(25, 65, 0, transform, false, 0, 8); //stagger damage is static
         }
 
@@ -86,19 +82,17 @@ public class MinimushHitboxHandler : MonoBehaviour
         {
             if(other.GetComponent<PlayerController>().isBroken)
             {
-                other.GetComponent<PlayerController>().ExecutePlayer(0, transform);
                 controller.onStandby = true;
             }
 
-            else
             other.GetComponent<PlayerController>().DamagePlayer(40, 110, 0, transform, false, 0, 13); //stagger damage is static
         }
 
         if(other.tag == "Player" && controller.grabAttack)
         {
-            other.GetComponent<PlayerController>().DamagePlayer(51, 0, 0, transform, true, 0, 7); //stagger damage is static
-            //other.GetComponent<PlayerController>().GrabPlayer(0, 51, 0, transform);
-            if(!PlayerController.instance.isDamaged)
+            other.GetComponent<PlayerController>().DamagePlayer(51, 0, 0, transform, true, 1, 7); //stagger damage is static
+
+            if(!PlayerController.instance.isDamaged || PlayerController.instance.isBroken)
             controller.onStandby = true;
         }
     }
