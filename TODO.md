@@ -10,9 +10,9 @@
 -add stat increasing items<br>
 -improve readability<br>
 -add traps and environmental hazards<br>
--add missing player corpses
--move soul values to SOs
--create soldiermush elite, magemush elite, mushgrowth elite, wingedmush elite
--create animations for additional stances and souls
--fine-tune platformer mechanics
--complete stage "facility 8"
+-add missing player corpses<br>
+-move soul values to SOs<br>
+-create soldiermush elite, magemush elite, mushgrowth elite, wingedmush elite<br>
+-create animations for additional stances and souls<br>
+-fine-tune platformer mechanics<br>
+-complete stage "facility 8"<br>
