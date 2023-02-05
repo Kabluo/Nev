@@ -8,10 +8,13 @@ public class MinimushEliteLightningstrike : MonoBehaviour
     {
         if(other.tag == "Player")
         {
-            PlayerController.instance.DamagePlayer(45, 100, 4, transform, false, 101, 7);
-            
-            if(other.GetComponent<PlayerController>().isBroken) //if attack kills, perform execution directly
-            other.GetComponent<PlayerController>().ExecutePlayer(100, transform);
+            if(PlayerController.instance.isBroken)
+            {
+                PlayerController.instance.ExecutePlayer(100, transform);
+            }
+
+            else
+                PlayerController.instance.DamagePlayer(45, 100, 4, transform, false, 100, 7);
         }
     }
 

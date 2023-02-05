@@ -83,33 +83,34 @@ public class MinimushEliteHitboxHandler : MonoBehaviour
         {
             if(other.GetComponent<PlayerController>().isBroken)
             {
-                other.GetComponent<PlayerController>().ExecutePlayer(2, transform);
+                PlayerController.instance.ExecutePlayer(6, controller.gameObject.transform);
                 controller.ManageStandby();
             }
 
             else
             {
-                other.GetComponent<PlayerController>().DamagePlayer(10, 25, 0, transform, false, 2, 7); //physical
-
+                other.GetComponent<PlayerController>().DamagePlayer(10, 0, 4, transform, false, 6, 7); //lightning, change sound to a lightning hit sound later
+                
                 if(!PlayerController.instance.isBroken)
-                other.GetComponent<PlayerController>().DamagePlayer(10, 0, 4, transform, false, 2, 7); //lightning, change sound to a lightning hit sound later
+                    other.GetComponent<PlayerController>().DamagePlayer(10, 25, 0, transform, false, 6, 7); //physical
             }
+            
         }
 
         if(other.tag == "Player" && controller.attack2)
         {
             if(other.GetComponent<PlayerController>().isBroken)
             {
-                other.GetComponent<PlayerController>().ExecutePlayer(2, transform);
+                PlayerController.instance.ExecutePlayer(6, controller.gameObject.transform);
                 controller.ManageStandby();
             }
 
             else
             {
-                other.GetComponent<PlayerController>().DamagePlayer(15, 65, 0, transform, false, 2, 8); //physical
+                other.GetComponent<PlayerController>().DamagePlayer(15, 0, 4, transform, false, 6, 8); //lightning, change sound to a lightning hit sound later
 
                 if(!PlayerController.instance.isBroken)
-                other.GetComponent<PlayerController>().DamagePlayer(15, 0, 4, transform, false, 2, 8); //lightning, change sound to a lightning hit sound later
+                    other.GetComponent<PlayerController>().DamagePlayer(15, 65, 0, transform, false, 6, 8); //physical
             }
         }
 
@@ -117,16 +118,16 @@ public class MinimushEliteHitboxHandler : MonoBehaviour
         {
             if(other.GetComponent<PlayerController>().isBroken)
             {
-                other.GetComponent<PlayerController>().ExecutePlayer(2, transform);
+                PlayerController.instance.ExecutePlayer(6, controller.gameObject.transform);
                 controller.ManageStandby();
             }
 
             else
             {
-                other.GetComponent<PlayerController>().DamagePlayer(25, 110, 0, transform, false, 2, 13);
+                other.GetComponent<PlayerController>().DamagePlayer(25, 0, 4, transform, false, 6, 13);
 
                 if(!PlayerController.instance.isBroken)
-                other.GetComponent<PlayerController>().DamagePlayer(25, 0, 4, transform, false, 2, 13);
+                    other.GetComponent<PlayerController>().DamagePlayer(25, 110, 0, transform, false, 6, 13);
             }
         }
 
@@ -134,33 +135,34 @@ public class MinimushEliteHitboxHandler : MonoBehaviour
         {
             if(other.GetComponent<PlayerController>().isBroken)
             {
-                other.GetComponent<PlayerController>().ExecutePlayer(2, transform);
+                PlayerController.instance.ExecutePlayer(6, controller.gameObject.transform);
                 controller.ManageStandby();
             }
 
             else
             {
-                other.GetComponent<PlayerController>().DamagePlayer(15, 65, 0, transform, false, 2, 8); //physical
+                other.GetComponent<PlayerController>().DamagePlayer(15, 0, 4, transform, false, 6, 8); //lightning, change sound to a lightning hit sound later
 
                 if(!PlayerController.instance.isBroken)
-                other.GetComponent<PlayerController>().DamagePlayer(15, 0, 4, transform, false, 2, 8); //lightning, change sound to a lightning hit sound later
+                    other.GetComponent<PlayerController>().DamagePlayer(15, 65, 0, transform, false, 6, 8); //physical
             }
+            
         }
 
         if(other.tag == "Player" && controller.teleDive)
         {
             if(other.GetComponent<PlayerController>().isBroken)
             {
-                other.GetComponent<PlayerController>().ExecutePlayer(2, transform);
+                PlayerController.instance.ExecutePlayer(6, controller.gameObject.transform);
                 controller.ManageStandby();
             }
 
             else
             {
-                other.GetComponent<PlayerController>().DamagePlayer(1, 110, 0, transform, false, 2, 13);
+                other.GetComponent<PlayerController>().DamagePlayer(25, 0, 4, transform, false, 6, 13);
 
                 if(!PlayerController.instance.isBroken)
-                other.GetComponent<PlayerController>().DamagePlayer(25, 0, 4, transform, false, 2, 13);
+                    other.GetComponent<PlayerController>().DamagePlayer(1, 110, 0, transform, false, 6, 13);
             }
         }
 
@@ -168,16 +170,16 @@ public class MinimushEliteHitboxHandler : MonoBehaviour
         {
             if(other.GetComponent<PlayerController>().isBroken)
             {
-                other.GetComponent<PlayerController>().ExecutePlayer(2, transform);
+                PlayerController.instance.ExecutePlayer(6, controller.gameObject.transform);
                 controller.ManageStandby();
             }
 
             else
             {
-                other.GetComponent<PlayerController>().DamagePlayer(25, 110, 0, transform, false, 2, 13);
+                other.GetComponent<PlayerController>().DamagePlayer(25, 0, 4, transform, false, 6, 13);
 
                 if(!PlayerController.instance.isBroken)
-                other.GetComponent<PlayerController>().DamagePlayer(25, 0, 4, transform, false, 2, 13);
+                    other.GetComponent<PlayerController>().DamagePlayer(25, 110, 0, transform, false, 6, 13);
             }
         }
 
@@ -185,14 +187,12 @@ public class MinimushEliteHitboxHandler : MonoBehaviour
         {
             if(other.GetComponent<PlayerController>().isBroken)
             {
-                other.GetComponent<PlayerController>().ExecutePlayer(2, transform);
+                PlayerController.instance.ExecutePlayer(6, controller.gameObject.transform);
                 controller.ManageStandby();
             }
 
             else
-            {
-                other.GetComponent<PlayerController>().DamagePlayer(40, 110, 4, transform, false, 2, 13);
-            }
+                other.GetComponent<PlayerController>().DamagePlayer(40, 110, 4, transform, false, 6, 13);
         }
     }
 }

@@ -45,10 +45,11 @@ public class MinimushEliteLightningTrap : MonoBehaviour
     {
         if(!playerInArea) { return; }
 
-        PlayerController.instance.DamagePlayer(45, 100, 4, transform, false, 101, 7);
+        if(PlayerController.instance.isBroken)
+            PlayerController.instance.ExecutePlayer(101, transform);
 
-        if(PlayerController.instance.isBroken) //if attack kills, perform execution directly
-        PlayerController.instance.ExecutePlayer(101, transform);
+        else
+            PlayerController.instance.DamagePlayer(45, 100, 4, transform, false, 101, 7);
     }
 
     public void DespawnBullet()

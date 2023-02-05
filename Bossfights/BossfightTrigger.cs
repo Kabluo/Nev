@@ -11,13 +11,7 @@ public class BossfightTrigger : MonoBehaviour
 
     void Start()
     {
-        if(PlayerTracker.instance.bossesDefeated[bossFightIndex])
-        {
-            gameObject.SetActive(false);
-        }
-
-        else //disable this / these gameobjects if boss is alive
-        afterBossObject.SetActive(false);
+        StartCoroutine(CheckIfDefeatedCO());
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -28,5 +22,17 @@ public class BossfightTrigger : MonoBehaviour
             AudioManager.instance.PlayMusic(bossFightMusicIndex);
             gameObject.SetActive(false);
         }
+    }
+
+    IEnumerator CheckIfDefeatedCO()
+    {
+        yield return new WaitForEndOfFrame();
+        if(PlayerTracker.instance.bossesDefeated[bossFightIndex])
+        {
+            gameObject.SetActive(false);
+        }
+
+        else //disable this / these gameobjects if boss is alive
+        afterBossObject.SetActive(false);
     }
 }

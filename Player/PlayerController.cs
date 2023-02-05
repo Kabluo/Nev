@@ -110,7 +110,6 @@ public class PlayerController : MonoBehaviour, IDataPersistance
         if(!isAlive) //remake later, also figure out a way so that isBroken animator state only triggers after certain animations
         {
             myRigidbody.velocity = new Vector2 (0f, myRigidbody.velocity.y); //stop if not alive
-            gameObject.tag = "Corpse";
             knockback = 0; //reset knockback, carries into respawn otherwise
             return;
         }
@@ -380,7 +379,7 @@ public class PlayerController : MonoBehaviour, IDataPersistance
 
         if(isGrab)
         {
-            transform.localScale = new Vector3(-1 * Mathf.Sign(transform.position.x - attackOrigin.position.x), 1f, 1f);
+            gameObject.transform.localScale = new Vector3(Mathf.Sign(attackOrigin.position.x - transform.position.x), 1f, 1f);
 
             myAnimator.SetInteger("pairId", incomingAttackId);
             myAnimator.SetTrigger("hasBeenGrabbed");
@@ -431,7 +430,7 @@ public class PlayerController : MonoBehaviour, IDataPersistance
             isDamaged = true;
             isDamagedCounter = iFrameAfterKnockback;
 
-            knockback = (knockbackMod * 2) * Mathf.Sign(transform.position.x-attackOrigin.position.x);
+            knockback = (knockbackMod * 2) * Mathf.Sign(transform.position.x - attackOrigin.position.x); //reversed calculation as knockback causes backwards movement
             PlayerTracker.instance.stagger = PlayerTracker.instance.maxStagger;
             }
 
@@ -442,7 +441,7 @@ public class PlayerController : MonoBehaviour, IDataPersistance
             isDamaged = true;
             isDamagedCounter = iFrameAfterStagger;
             
-            knockback = knockbackMod * Mathf.Sign(transform.position.x-attackOrigin.position.x);
+            knockback = knockbackMod * Mathf.Sign(transform.position.x - attackOrigin.position.x);
             PlayerTracker.instance.stagger = PlayerTracker.instance.maxStagger;
             }
         }
@@ -457,16 +456,23 @@ public class PlayerController : MonoBehaviour, IDataPersistance
                 isBroken = true;
             }
             
-            else
-                ExecutePlayer(incomingAttackId, attackOrigin);
+            else //grab attack execution function
+            {
+                isAlive = false;
+                isBroken = false; //end broken state
+                myAnimator.SetBool("isBroken", isBroken);
+                myAnimator.SetTrigger("hasBeenKilled");
+
+                RespawnController.instance.playerCorpseId = incomingAttackId;
+            }
         }
     }
 
-    void ExecutePlayer(int executionId, Transform attackOrigin)
+    public void ExecutePlayer(int executionId, Transform attackOrigin)
     {
+        gameObject.transform.localScale = new Vector3(Mathf.Sign(attackOrigin.position.x - transform.position.x), 1f, 1f);
         isBroken = false; //end broken state
         isAlive = false;
-        transform.localScale = new Vector3(-1 * Mathf.Sign(transform.position.x - attackOrigin.position.x), 1, 1);
         myAnimator.SetBool("isBroken", isBroken);
         myAnimator.SetInteger("pairId", executionId);
         myAnimator.SetTrigger("hasBeenKilled");

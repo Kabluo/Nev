@@ -6,6 +6,7 @@ public class EnemyController : MonoBehaviour
 {
     [Header("LOS")]
     [SerializeField] float lineOfSightDistance = 15f; //causes a circular area around the character, maybe change to conic later (or use triggers, requires moving this to a child object)
+    [SerializeField] float autoTriggerRange = 1f;
     Vector2 playerLocation;
     [SerializeField] LayerMask playerLayer;
     [SerializeField] float attackRange = 3f;
@@ -59,6 +60,9 @@ public class EnemyController : MonoBehaviour
             rigidBody.velocity = new Vector2(0f, 0f);
             return;
         }
+
+        if(healthController.isBroken)
+            rigidBody.velocity = new Vector2(0f, rigidBody.velocity.y);
         
         if(animator.GetCurrentAnimatorStateInfo(0).IsTag("PreventsAction") && healthController.knockback != 0)
             rigidBody.velocity = new Vector2(healthController.knockback, rigidBody.velocity.y);
@@ -98,7 +102,7 @@ public class EnemyController : MonoBehaviour
         if(isChasing) { return; }
 
         if(Vector2.Distance(transform.position, playerLocation) <= lineOfSightDistance * Mathf.Sign(playerLocation.x - transform.position.x) * -transform.localScale.x ||
-        healthController.triggeredByDamage)
+        Vector2.Distance(transform.position, playerLocation) <= autoTriggerRange || healthController.triggeredByDamage)
         {
             if(Physics2D.Linecast(transform.position, playerLocation, whatIsGround) && !healthController.triggeredByDamage)
                 return;

@@ -119,37 +119,43 @@ public class SoldiermushBehaviour : MonoBehaviour
     {
         if(other.tag == "Player" && attackStomp)
         {
-            if(other.GetComponent<PlayerController>().isBroken)
+            if(PlayerController.instance.isBroken)
             {
+                PlayerController.instance.ExecutePlayer(2, controller.gameObject.transform);
                 controller.ManageStandby(new Vector2(0f, 0f));
             }
 
-            other.GetComponent<PlayerController>().DamagePlayer(20, 25, 0, transform, false, 2, 7);
+            else
+                PlayerController.instance.DamagePlayer(20, 25, 0, controller.gameObject.transform, false, 2, 7);
         }
 
         else if(other.tag == "Player" && attackHeadbutt)
         {
-            if(other.GetComponent<PlayerController>().isBroken)
+            if(PlayerController.instance.isBroken)
             {
+                PlayerController.instance.ExecutePlayer(2, controller.gameObject.transform);
                 controller.ManageStandby(new Vector2(0f, 0f));
             }
 
-            other.GetComponent<PlayerController>().DamagePlayer(25, 30, 0, transform, false, 2, 7);
+            else
+                PlayerController.instance.DamagePlayer(25, 30, 0, controller.gameObject.transform, false, 2, 7);
         }
 
         else if(other.tag == "Player" && attackCharge)
         {
-            if(other.GetComponent<PlayerController>().isBroken)
+            if(PlayerController.instance.isBroken)
             {
+                PlayerController.instance.ExecutePlayer(2, controller.gameObject.transform);
                 controller.ManageStandby(new Vector2(0f, 0f));
             }
 
-            other.GetComponent<PlayerController>().DamagePlayer(35, 60, 0, transform, false, 2, 7);
+            else
+                PlayerController.instance.DamagePlayer(35, 60, 0, controller.gameObject.transform, false, 2, 7);
         }
 
         else if(other.tag == "Player" && attackGrab)
         {
-            other.GetComponent<PlayerController>().DamagePlayer(51, 0, 0, transform, true, 3, 7);
+            PlayerController.instance.DamagePlayer(51, 0, 0, controller.gameObject.transform, true, 3, 7);
 
             if(!PlayerController.instance.isDamaged || PlayerController.instance.isBroken)
             controller.ManageStandby(grabAttackOffset); //update offset later

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EldritchSoulBullet : MonoBehaviour
+public class MagemushFirebolt : MonoBehaviour
 {
     Rigidbody2D bulletRigidbody;
     Vector3 originPosition;
@@ -20,7 +20,7 @@ public class EldritchSoulBullet : MonoBehaviour
         originPosition = transform.position;
         timeAtCreation = Time.time;
         bulletRigidbody = GetComponent<Rigidbody2D>();
-        direction = PlayerController.instance.gameObject.transform.localScale.x;
+        direction = Mathf.Sign(PlayerController.instance.transform.position.x - transform.position.x);
     }
 
     // Update is called once per frame
@@ -33,13 +33,18 @@ public class EldritchSoulBullet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.tag == "Enemy")
+        if(other.tag == "Player")
         {
-            damageAmount = 8 + (2*PlayerTracker.instance.magic);
-            other.GetComponent<EnemyHealthController>().DamageEnemy(damageAmount, 5, 5, originPosition, 1);
+            if(PlayerController.instance.isBroken)
+            {
+                PlayerController.instance.ExecutePlayer(103, transform);
+            }
+
+            else
+                PlayerController.instance.DamagePlayer(30, 40, 1, transform, false, 103, 44);
         }
         
-        AudioManager.instance.PlaySFXPitchRandomized(40);
+        AudioManager.instance.PlaySFXPitchRandomized(44);
 
         DestroyBullet();
     }

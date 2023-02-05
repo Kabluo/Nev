@@ -2,15 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MinimushEliteLightningstrikeVariant : MonoBehaviour
+public class MagemushLightningstrike : MonoBehaviour
 {
     void OnTriggerEnter2D(Collider2D other)
     {
         if(other.tag == "Player")
         {
-            other.GetComponent<PlayerController>().DamagePlayer(85, 0, 4, transform, true, 7, 7);
-            FindObjectOfType<MinimushEliteBehaviour>().grabbedNev = true;
-            FindObjectOfType<MinimushEliteBehaviour>().ManageStandby();
+            if(PlayerController.instance.isBroken)
+            {
+                PlayerController.instance.ExecutePlayer(102, transform);
+            }
+
+            else
+                PlayerController.instance.DamagePlayer(45, 65, 4, transform, false, 102, 7);
         }
     }
 
