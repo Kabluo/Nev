@@ -12,8 +12,9 @@ public class EnemyController : MonoBehaviour
     [SerializeField] float attackRange = 3f;
     public bool inRange;
 
-    [Header("Movement")]
+    
     private EnemyHealthController healthController;
+    [Header("Movement")]
     [SerializeField] Transform groundPoint;
     [SerializeField] Transform wallCheckPoint;
     private bool isOnGround;
@@ -32,9 +33,8 @@ public class EnemyController : MonoBehaviour
     public bool isChasing;
     [SerializeField] float distanceToPlayerWhenEngaged = 0.5f; //at what distance should the character stop approaching player
 
-    [Header("Standby Management")]
-    //[SerializeField] List<string> playerAnimNames = new List<string>(); //end standby when player reaches said animation stage
     private Vector3 standbyEnterLocation;
+    [Header("Standby Management")]
     public bool onStandby;
 
     void Start()
@@ -61,9 +61,6 @@ public class EnemyController : MonoBehaviour
             return;
         }
 
-        if(healthController.isBroken)
-            rigidBody.velocity = new Vector2(0f, rigidBody.velocity.y);
-        
         if(animator.GetCurrentAnimatorStateInfo(0).IsTag("PreventsAction") && healthController.knockback != 0)
             rigidBody.velocity = new Vector2(healthController.knockback, rigidBody.velocity.y);
         
@@ -83,7 +80,12 @@ public class EnemyController : MonoBehaviour
             Patrol();
 
         else
+        {
             Engaged();
+
+            if(!PlayerController.instance.isAlive)
+                isChasing = false;
+        }
     }
 
     void FixedUpdate()
@@ -124,6 +126,7 @@ public class EnemyController : MonoBehaviour
     void CheckRange()
     {
         //Debug.DrawLine(transform.position, new Vector3(transform.position.x - (attackRange*transform.localScale.x), transform.position.y));
+        //change later, add a bool check for enemies that don't need to face the player for attacks, and maybe use simple distance calculations instead of raycasting
         if(Vector3.Distance(PlayerController.instance.transform.position, transform.position) <= attackRange * Mathf.Sign(playerLocation.x - transform.position.x) * -transform.localScale.x
         && !Physics2D.Linecast(transform.position, PlayerController.instance.transform.position, whatIsGround))
             inRange = true;

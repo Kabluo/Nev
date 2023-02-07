@@ -14,6 +14,8 @@ public class MagemushBehaviour : MonoBehaviour
     [SerializeField] float lightningStrikeCooldown = 15f;
     private float lightningStrikeTimer = 0f;
     [SerializeField] GameObject fireball;
+    [SerializeField] float fireballCooldown = 3f;
+    private float fireballTimer;
     [SerializeField] float fireballAngleLimit = 1f;
     private int attackId;
     public bool attackSmash;
@@ -38,6 +40,9 @@ public class MagemushBehaviour : MonoBehaviour
         
         if(lightningStrikeTimer > 0)
             lightningStrikeTimer -= Time.deltaTime;
+
+        if(fireballTimer > 0)
+            fireballTimer -= Time.deltaTime;
 
         if(controller.onStandby)
         {
@@ -69,7 +74,8 @@ public class MagemushBehaviour : MonoBehaviour
         }
         
         else if(!Physics2D.Linecast(transform.position, PlayerController.instance.transform.position, controller.whatIsGround)
-        && Mathf.Abs(PlayerController.instance.transform.position.y - transform.position.y) <= fireballAngleLimit && controller.isChasing)
+        && Mathf.Abs(PlayerController.instance.transform.position.y - transform.position.y) <= fireballAngleLimit && controller.isChasing
+        && fireballTimer <= 0)
         {
             if(transform.position.x < PlayerController.instance.gameObject.transform.position.x) //turn when casting
             {
@@ -105,6 +111,7 @@ public class MagemushBehaviour : MonoBehaviour
 
         else if(attackFirebolt)
         {
+            fireballTimer = fireballCooldown;
             hitBox.offset = new Vector2(-0.8f, 0.1f);
             hitBox.size = new Vector2(1.8f, 1.5f);
             hitBox.enabled = true;
