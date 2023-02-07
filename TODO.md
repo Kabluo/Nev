@@ -1,10 +1,7 @@
 //TODO<br>
 -add broken death timer for player and cause enemies to die on hit when broken<br>
 -fix slight errors in parallax and options scripts<br>
--test EnemyController script<br>
 -improve LOS method in EnemyController<br>
--complete adding magemush<br>
--add mushgrowth and wingedmush<br>
 -add air attacks, maybe add heavy attacks<br>
 -complete adding skills for eldritch soul and mushroom soul<br>
 -add stat increasing items<br>
