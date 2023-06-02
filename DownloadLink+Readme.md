@@ -1,5 +1,7 @@
 https://drive.google.com/drive/folders/1cBryzKH0TIu9YptK90Azrbfm6vv1ZIOo?usp=sharing <br>
 -Batın KARADAĞ, İstanbul Rumeli Üniversitesi-<br>
+Animations and development made by Batın KARADAĞ<br>
+Sound effects and music obtained through Unity Asset Store<br>
 <br>
 -The game is currently being remade from ground up with slightly different mechanics than those shown in the downloaded demo. A complete list of changes made<br>
 and planned can be seen at the end of this file.<br>
